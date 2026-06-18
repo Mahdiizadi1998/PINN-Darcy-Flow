@@ -1,0 +1,53 @@
+# ==============================================================================
+# PINN for Darcy Flow — Default Configuration
+# ==============================================================================
+# Usage:
+#   python main.py --config configs/default.yaml
+#   python main.py --config configs/default.yaml --case homogeneous --epochs 20000
+#   (CLI arguments override config file values)
+# ==============================================================================
+
+# --- Model Architecture ---
+model:
+  n_frequencies: 64          # Fourier feature frequencies (higher = finer detail)
+  sigma: 2.0                 # Fourier feature scale (controls frequency range)
+  hidden_width: 128          # Width of hidden layers
+  n_residual_blocks: 4       # Number of residual blocks
+  use_fourier_features: true # Set false for ablation study
+  hard_bc: false             # Use hard BC enforcement (distance function)
+
+# --- Training ---
+training:
+  epochs: 15000
+  learning_rate: 0.001
+  min_learning_rate: 0.000001
+  optimizer: "adam"          # "adam" or "lbfgs"
+
+  # Collocation points
+  n_interior: 4000           # Interior collocation points per epoch
+  n_boundary_per_edge: 200   # Boundary points per edge (total = 4x)
+  resample_every: 500        # Re-draw interior points every N epochs
+
+  # Loss weighting
+  lambda_pde: 1.0
+  lambda_bc: 10.0
+  lambda_data: 1.0
+  adaptive_weights: true     # Gradient-normalization adaptive weighting
+  adaptive_alpha: 0.9        # EMA smoothing for weight updates
+
+  # Optional sparse data (set n_data_points: 0 to disable)
+  n_data_points: 0
+  data_noise_std: 0.0
+
+  # Logging
+  log_every: 500
+  save_every: 5000
+
+# --- Evaluation ---
+evaluation:
+  n_grid: 100                # Grid resolution for visualization
+  save_figures: true
+  output_dir: "figures"
+
+# --- Reproducibility ---
+seed: 42
